@@ -2,14 +2,35 @@ package com.epicodus.ak.virtualpet;
 
 import java.util.Map;
 import java.util.HashMap;
+
+import org.sql2o.Sql2o;
 import spark.ModelAndView;
+import spark.Spark;
 import spark.template.velocity.VelocityTemplateEngine;
 import static spark.Spark.*;
 
 public class App{
 
     public  static void main(String[] args){
-        staticFileLocation("/public");
+
+        // Use Heroku environment variables, if detected
+        if (System.getenv("PORT") != null) {
+            Spark.port(Integer.parseInt(System.getenv("PORT")));
+        }
+
+        if (System.getenv("JDBC_DATABASE_URL") != null) {
+            DB.sql2o  = new Sql2o(
+                    System.getenv("JDBC_DATABASE_URL"),
+                    System.getenv("JDBC_DATABASE_USERNAME"),
+                    System.getenv("JDBC_DATABASE_PASSWORD"));
+        } else {
+            // TODO: move local database setting to some config file
+            DB.sql2o  = new Sql2o(
+                    "jdbc:postgresql://localhost:5432/virtual_pet",
+                    "postgres",
+                    "postgres");
+        }
+
         String layout = "templates/layout.vtl";
 
         get("/", (request, response) -> {
