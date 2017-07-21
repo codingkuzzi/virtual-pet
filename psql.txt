@@ -1,0 +1,2 @@
+psql -d postgres -c "CREATE DATABASE virtual_pet" -h localhost -U postgres -W 
+psql -d virtual_pet -f media.sql -h localhost -U postgres -W
